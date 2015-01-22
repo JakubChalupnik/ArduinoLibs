@@ -17,6 +17,8 @@
 #define F_BATTERY_LIION  0x0010
 #define F_BATTERY_MASK 0x0018
 
+#define F_BATTERY_DEAD 0x0020
+
 #define NODE_ID_SIZE 10
 
 typedef struct {
