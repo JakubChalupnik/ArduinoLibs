@@ -1,10 +1,8 @@
 #include "uartWIFI.h"
 
-#ifdef UNO
+SoftwareSerial ESPSerial(_ESP_RXPIN_,_ESP_TXPIN_);
 
-SoftwareSerial mySerial(_DBG_RXPIN_,_DBG_TXPIN_);
-
-#endif
+#define DEBUG
 
 #ifdef DEBUG
 #define DBG(message)    DebugSerial.print(message)

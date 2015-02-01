@@ -18,36 +18,15 @@ V1.0	released the first version of ESP8266 library
 //#include "NilRTOS.h"
 #include <SoftwareSerial.h>
 
-#define _DBG_RXPIN_ 2
-#define _DBG_TXPIN_ 3
+#define _ESP_RXPIN_ 8
+#define _ESP_TXPIN_ 9
 
 #define debugBaudRate 9600
 
-
-//#define UNO			//uncomment this line when you use it with UNO board
-#define MEGA		//uncomment this line when you use it with MEGA board
-
-
-#define DEBUG
-
-
-#ifdef UNO
-#define _cell	Serial
-#define DebugSerial	mySerial
-
-#endif  
-#ifdef MEGA
-#define _cell	Serial1
+#define _cell	ESPSerial
 #define DebugSerial	Serial
-#endif  
-		
 
-		
-		
-#ifdef UNO
-extern SoftwareSerial mySerial;
-
-#endif
+extern SoftwareSerial ESPSerial;
 
 
 //The way of encrypstion
