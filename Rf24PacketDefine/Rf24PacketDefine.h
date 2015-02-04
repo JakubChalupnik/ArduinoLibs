@@ -6,6 +6,7 @@
 #define RF24_TYPE_TIME 0
 #define RF24_TYPE_TEMP 1
 #define RF24_TYPE_ID 2
+#define RF24_TYPE_SOLAR 3
 
 #define F_SENSOR_NONE   0x0000
 #define F_SENSOR_DS1820 0x0001
@@ -15,6 +16,7 @@
 #define F_BATTERY_NONE   0x0000
 #define F_BATTERY_CR2032 0x0008
 #define F_BATTERY_LIION  0x0010
+#define F_BATTERY_SOLAR  0x0018
 #define F_BATTERY_MASK 0x0018
 
 #define F_BATTERY_DEAD 0x0020
@@ -46,6 +48,11 @@ typedef struct {
   uint16_t Flags;
   uint16_t _padding;
 } PayloadId_t;
+
+typedef struct {
+  uint8_t BattLevel;
+  uint8_t SolarVoltage;    // Reported in tenths of volt
+} PayloadSolar_t;
 
 typedef union {
   PayloadDefault_t Default;
