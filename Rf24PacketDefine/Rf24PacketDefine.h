@@ -1,6 +1,12 @@
 #ifndef _Rf24PacketDefine_h
 #define _Rf24PacketDefine_h
 
+#if defined (__arm__)
+#define PACKED __attribute__ ((__packed__)) 
+#else
+#define PACKED 
+#endif
+
 #define RF24_CHANNEL 90
 
 #define RF24_TYPE_TIME 0
@@ -23,25 +29,25 @@
 
 #define NODE_ID_SIZE 10
 
-typedef struct {
+typedef struct PACKED {
   uint8_t Raw [8];    		// Raw payload, 8 bytes of something
 } PayloadRaw_t;
 
-typedef struct {
+typedef struct PACKED {
   uint8_t BattLevel;    	// Battery voltage over 2V in 10s of mV - e.g. 3.3V is reported as 130
 } PayloadDefault_t;
 
-typedef struct {
+typedef struct PACKED {
   uint8_t BattLevel; 
   uint32_t Time;        	// Time in standard Unix format
 } PayloadTime_t;
 
-typedef struct {
+typedef struct PACKED {
   uint8_t BattLevel;
   uint16_t Temperature[2];   // Up to two temperatures, reported in tenths of degrees. 0xFFFF means 'no temperature'
 } PayloadTemperature_t;
 
-typedef struct {
+typedef struct PACKED {
   uint8_t BattLevel;
   char Id[NODE_ID_SIZE];    // Node identification
   uint8_t Version;
@@ -49,7 +55,7 @@ typedef struct {
   uint16_t _padding;
 } PayloadId_t;
 
-typedef struct {
+typedef struct PACKED {
   uint8_t BattLevel;
   uint8_t SolarVoltage;    // Reported in tenths of volt
 } PayloadSolar_t;
