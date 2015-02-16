@@ -25,7 +25,7 @@ uint8_t SW_SPDR;
 #define SW_MISO 3
 #define SW_MOSI 4
 #define SW_SCK 5
-#define SW_CS 6
+#define SW_CS 8 // This is dummy, the real CS is set as a part of Ethercard::begin call, like ether.begin(sizeof Ethernet::buffer, mymac, 8);
 
 #define SetMosi() {digitalWrite (SW_MOSI, HIGH);}
 #define ClearMosi() {digitalWrite (SW_MOSI, LOW);}
@@ -296,13 +296,13 @@ void ENC28J60::initSPI () {
 }
 
 static void enableChip () {
-    cli();
+    noInterrupts();
     digitalWrite(selectPin, LOW);
 }
 
 static void disableChip () {
     digitalWrite(selectPin, HIGH);
-    sei();
+    interrupts();
 }
 
 static void xferSPI (byte data) {

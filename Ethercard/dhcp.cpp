@@ -326,7 +326,11 @@ bool EtherCard::dhcpSetup (const char *hname, bool fromRam) {
             strncpy(hostname, hname, DHCP_HOSTNAME_MAX_LEN);
         }
         else {
+#if defined(__AVR__) 
             strncpy_P(hostname, hname, DHCP_HOSTNAME_MAX_LEN);
+#else						
+            strncpy(hostname, hname, DHCP_HOSTNAME_MAX_LEN);
+#endif					
         }
     }
     else {

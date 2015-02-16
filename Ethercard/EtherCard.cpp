@@ -11,7 +11,9 @@
 
 #include <EtherCard.h>
 #include <stdarg.h>
+#if defined(__AVR__)
 #include <avr/eeprom.h>
+#endif
 
 //#define FLOATEMIT // uncomment line to enable $T in emit_P for float emitting
 
@@ -175,6 +177,7 @@ void Stash::prepare (PGM_P fmt, ...) {
             case 'F':
                 arglen = strlen_P((PGM_P) argval);
                 break;
+#if defined(__AVR__)								
             case 'E': {
                 byte* s = (byte*) argval;
                 char d;
@@ -182,6 +185,7 @@ void Stash::prepare (PGM_P fmt, ...) {
                     ++arglen;
                 break;
             }
+#endif						
             case 'H': {
                 Stash stash (argval);
                 arglen = stash.size();
@@ -256,9 +260,11 @@ void Stash::extract (uint16_t offset, uint16_t count, void* buf) {
         case 'F':
             c = pgm_read_byte(ptr++);
             break;
+#if defined(__AVR__)
         case 'E':
             c = eeprom_read_byte((byte*) ptr++);
             break;
+#endif						
         case 'H':
             c = ((Stash*) ptr)->get();
             break;
@@ -356,6 +362,7 @@ void BufferFiller::emit_p(PGM_P fmt, ...) {
                 *ptr++ = d;
             continue;
         }
+#if defined(__AVR__)				
         case 'E': {
             byte* s = va_arg(ap, byte*);
             char d;
@@ -363,6 +370,7 @@ void BufferFiller::emit_p(PGM_P fmt, ...) {
                 *ptr++ = d;
             continue;
         }
+#endif				
         default:
             *ptr++ = c;
             continue;
