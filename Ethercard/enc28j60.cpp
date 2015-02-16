@@ -18,6 +18,22 @@
 uint16_t ENC28J60::bufferSize;
 bool ENC28J60::broadcast_enabled = false;
 
+#define SW_SPI
+
+#ifdef SW_SPI
+uint8_t SW_SPDR;
+#define SW_MISO 3
+#define SW_MOSI 4
+#define SW_SCK 5
+#define SW_CS 6
+
+#define SetMosi() {digitalWrite (SW_MOSI, HIGH);}
+#define ClearMosi() {digitalWrite (SW_MOSI, LOW);}
+#define ReadMiso() digitalRead (SW_MISO)
+#define SetClk() {digitalWrite (SW_SCK, HIGH);}
+#define ClearClk() {digitalWrite (SW_SCK, LOW);} 
+#endif // SW_SPI
+
 // ENC28J60 Control Registers
 // Control register definitions are a combination of address,
 // bank number, and Ethernet/MAC/PHY indicator bits.
@@ -255,6 +271,15 @@ static int gNextPacketPtr;
 static byte selectPin;
 
 void ENC28J60::initSPI () {
+#ifdef SW_SPI
+    pinMode(SW_MOSI, OUTPUT);
+    pinMode(SW_SCK, OUTPUT);
+    pinMode(SW_MISO, INPUT);
+
+    digitalWrite(SW_MOSI, HIGH);
+    digitalWrite(SW_MOSI, LOW);
+    digitalWrite(SW_SCK, LOW);
+#else 
     pinMode(SS, OUTPUT);
     digitalWrite(SS, HIGH);
     pinMode(MOSI, OUTPUT);
@@ -267,6 +292,7 @@ void ENC28J60::initSPI () {
 
     SPCR = bit(SPE) | bit(MSTR); // 8 MHz @ 16
     bitSet(SPSR, SPI2X);
+#endif // SW_SPI	
 }
 
 static void enableChip () {
@@ -280,9 +306,33 @@ static void disableChip () {
 }
 
 static void xferSPI (byte data) {
+#ifdef SW_SPI
+	uint8_t i, RetVal = 0;
+
+	for (i = 0; i < 8; i++) {
+		// Handle MOSI
+		if (data & 0x80) {
+			SetMosi ();
+		} else {
+			ClearMosi ();
+		}
+		data <<= 1;
+		
+		// Handle MISO
+		SetClk ();
+		RetVal <<= 1;
+		if (ReadMiso ()) {
+			RetVal |= 1;
+		} 
+		ClearClk ();
+	}
+
+	SW_SPDR = RetVal;
+#else	
     SPDR = data;
     while (!(SPSR&(1<<SPIF)))
         ;
+#endif // SW_SPI
 }
 
 static byte readOp (byte op, byte address) {
@@ -291,7 +341,11 @@ static byte readOp (byte op, byte address) {
     xferSPI(0x00);
     if (address & 0x80)
         xferSPI(0x00);
+#ifdef SW_SPI
+    byte result = SW_SPDR;
+#else		
     byte result = SPDR;
+#endif // SW_SPI	
     disableChip();
     return result;
 }
@@ -308,7 +362,11 @@ static void readBuf(uint16_t len, byte* data) {
     xferSPI(ENC28J60_READ_BUF_MEM);
     while (len--) {
         xferSPI(0x00);
+#ifdef SW_SPI
+        *data++ = SW_SPDR;
+#else
         *data++ = SPDR;
+#endif // SW_SPI		
     }
     disableChip();
 }
@@ -366,7 +424,9 @@ static void writePhy (byte address, uint16_t data) {
 
 byte ENC28J60::initialize (uint16_t size, const byte* macaddr, byte csPin) {
     bufferSize = size;
+#ifndef SW_SPI	
     if (bitRead(SPCR, SPE) == 0)
+#endif // SW_SPI	
         initSPI();
     selectPin = csPin;
     pinMode(selectPin, OUTPUT);
@@ -533,7 +593,9 @@ uint8_t ENC28J60::doBIST ( byte csPin) {
 #define RANDOM_RACE        0b1100
 
 // init
+#ifndef SW_SPI
     if (bitRead(SPCR, SPE) == 0)
+#endif // SW_SPI	
         initSPI();
     selectPin = csPin;
     pinMode(selectPin, OUTPUT);
