@@ -7,12 +7,12 @@
 #define PACKED 
 #endif
 
-#define RF24_CHANNEL 90
-
 #define RF24_TYPE_TIME 0
 #define RF24_TYPE_TEMP 1
 #define RF24_TYPE_ID 2
 #define RF24_TYPE_SOLAR 3
+
+#define RF24_SENSOR_TYPE_TEMP 16
 
 #define F_SENSOR_NONE   0x0000
 #define F_SENSOR_DS1820 0x0001
@@ -28,6 +28,11 @@
 #define F_BATTERY_DEAD 0x0020
 
 #define NODE_ID_SIZE 10
+
+#define RF24_SENSOR_PIPE ((uint8_t *) "SnSrS")
+#define RF24_BROADCAST_PIPE ((uint8_t *) "BdCsT")
+#define RF24_RADIO_CHANNEL 89
+#define RF24_NETWORK_CHANNEL 90
 
 typedef struct PACKED {
   uint8_t Raw [8];    		// Raw payload, 8 bytes of something
@@ -66,5 +71,14 @@ typedef union {
   PayloadTemperature_t Temperature;
   PayloadRaw_t Raw;
 } Payload_t;
+
+typedef struct PACKED {
+  uint8_t PacketType;
+  uint8_t BattLevel;
+	uint16_t Flags;
+	uint16_t SensorId;
+  uint16_t Temperature[2];   // Up to two temperatures, reported in tenths of degrees. 0xFFFF means 'no temperature'
+} SensorPayloadTemperature_t;
+
 
 #endif
