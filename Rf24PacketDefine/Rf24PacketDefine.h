@@ -24,9 +24,10 @@
 #define F_BATTERY_CR2032 0x0008
 #define F_BATTERY_LIION  0x0010
 #define F_BATTERY_SOLAR  0x0018
-#define F_BATTERY_MASK 0x0018
+#define F_BATTERY_MASK   0x0018
 
-#define F_BATTERY_DEAD 0x0020
+#define F_BATTERY_DEAD  0x0020
+#define F_NO_VOLTAGE    0x0040
 
 #define NODE_ID_SIZE 10
 
@@ -81,7 +82,7 @@ typedef struct PACKED {
   uint16_t Temperature[2];   // Up to two temperatures, reported in tenths of degrees. 0xFFFF means 'no temperature'
 } SensorPayloadTemperature_t;
 
- typedef struct PACKED {
+typedef struct PACKED {
   uint8_t PacketType;
   uint8_t BattLevel;
   uint8_t Humidity;
@@ -90,5 +91,29 @@ typedef struct PACKED {
   uint16_t Temperature;
   uint16_t Pressure;
 } SensorPayloadMeteo_t;
+
+typedef struct PACKED {
+  uint8_t PacketType;
+  uint8_t BattLevel;
+  union {
+    struct {
+      uint8_t Humidity;
+      uint8_t FlagsS;
+    };
+    uint16_t Flags;
+  };
+  uint16_t SensorId;
+  union {
+    struct {
+      uint16_t TemperatureInt;
+      uint16_t TemperatureExt;
+    };
+    struct {
+      uint16_t Temperature;
+      uint16_t Pressure;
+    };
+  };
+} SensorPayload_t;
+
 
 #endif
