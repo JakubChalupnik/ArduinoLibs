@@ -14,6 +14,7 @@
 
 #define RF24_SENSOR_TYPE_TEMP 16
 #define RF24_SENSOR_TYPE_METEO 17
+#define RF24_SENSOR_TYPE_SOLAR 18
 
 #define F_SENSOR_NONE   0x0000
 #define F_SENSOR_DS1820 0x0001
@@ -93,17 +94,17 @@ typedef struct PACKED {
 } SensorPayloadMeteo_t;
 
 typedef struct PACKED {
-  uint8_t PacketType;
-  uint8_t BattLevel;
-  union {
+  uint8_t PacketType;				// Byte 0
+  uint8_t BattLevel;				// Byte 1
+  union {										// Bytes 2 and 3
     struct {
       uint8_t Humidity;
       uint8_t FlagsS;
     };
     uint16_t Flags;
   };
-  uint16_t SensorId;
-  union {
+  uint16_t SensorId;				// Bytes 4 and 5
+  union {										// Bytes 6, 7, 8, 9
     struct {
       uint16_t TemperatureInt;
       uint16_t TemperatureExt;
@@ -111,6 +112,10 @@ typedef struct PACKED {
     struct {
       uint16_t Temperature;
       uint16_t Pressure;
+    };
+    struct {
+      uint16_t SolarVoltage;
+      uint16_t SolarPower;
     };
   };
 } SensorPayload_t;
