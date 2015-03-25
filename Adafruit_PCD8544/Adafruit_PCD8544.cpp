@@ -110,8 +110,8 @@ void Adafruit_PCD8544::drawPixel(int16_t x, int16_t y, uint16_t color) {
   if ((x < 0) || (x >= LCDWIDTH) || (y < 0) || (y >= LCDHEIGHT))
     return;
 
-  x = 83 - x;
-  y = 47 - y;
+  // x = 83 - x;
+  // y = 47 - y;
   // x is which column
   if (color)
     pcd8544_buffer[x+ (y/8)*LCDWIDTH] |= _BV(y%8);
@@ -127,8 +127,8 @@ uint8_t Adafruit_PCD8544::getPixel(int8_t x, int8_t y) {
   if ((x < 0) || (x >= LCDWIDTH) || (y < 0) || (y >= LCDHEIGHT))
     return 0;
 
-  x = 83 - x;
-  y = 47 - y;
+  // x = 83 - x;
+  // y = 47 - y;
   return (pcd8544_buffer[x+ (y/8)*LCDWIDTH] >> (y%8)) & 0x1;
 }
 
